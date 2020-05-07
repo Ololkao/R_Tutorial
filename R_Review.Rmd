@@ -1,0 +1,156 @@
+---
+title: "R_Review"
+author: "高涵毅"
+date: "2020/5/7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## 1.Introduction to R
+
+> _Arithmetic Operators_
+```{r}
+4*(2+3)/(3-1)  #四則運算
+5^3  #次方(或5**3)
+5%%3  #求餘數
+5%/%3  #求商數
+```
+---
+
+> _Basic Features_
+
+R建議用**<-**當作指派，雖然多數情況下可以與**=**通用，若要全域指派則用**<<-**
+
+替變數命名可以用 a-z , A-Z , 0-9 , _ , . ,等字元，
+不過開頭必須是英文字母，且不能與保留字(eg. for, while...)相同
+
+
++ 在R裡有一些跟數學相關的保留字
+```{r}
+NA  #缺失值
+NaN  #0/0
+Inf  #1/0
+pi  #3.1415...
+1e-3  #科學記號
+```
+
+
++ 也有很多數學相關的函數
+```{r}
+abs(-2)
+sqrt(5)  #也可以寫成5^0.5
+exp(10)
+log(10)  #實際上是10取自然對數
+log10(10)
+round(125.78253, digits = 3)  #小數點後第三位四捨五入
+signif(83524587, digits = 3)  #從頭數過來第三位做四捨五入
+floor(125.78253)
+ceiling(125.78253)
+trunc(125.78253)  #保留整數部分
+## 當然也有三角函數：sin(), cos(), tan(), asin(), acos(), atan()
+```
+---
+
+> _Vectors_
+
++ 建立向量
+```{r}
+1:5
+seq(1,9,by=2)  #1,3,5,7,9
+rep(3,12)  #3重複12次
+c(1:5, seq(6,10,length.out=4), rep(11,3))  #c()結合多個數字或字串成為向量
+V1 <- rep(NA, 7)
+V1
+a <- c(3, 5, 9, 10)
+b <- c(14, 15, 17)
+V1[4:7] <- a
+V1[1:3] <- b
+V1
+```
+
++ 向量索引及運算
+```{r}
+vt1 <- c(2:4)
+vt2 <- c(3:6)
+vt3 <- c(vt2, vt1)
+length(vt3)
+vt1[3]
+vt2[-2]
+vt3[c(2,4,6)]
+vt3^3
+vt1*vt2  #長度不相同會出現警告！
+vt1/8:10  #長度相同才能做運算
+```
+
++ 與向量有關的函數
+```{r}
+A <- c(3, 3, 3, 3, 5, 5)
+unique(A)
+table(A)
+B <- c(5, 1, 2, 10, 10, 8)
+sort(B, decreasing=TRUE)
+order(B)
+union(A, B)
+intersect(A, B)
+setdiff(A, B)
+setequal(A, B)
+```
+---
+
+> _Descriptive Statistics and Basic Plots_
+
+* **min(x)**  最小值
+
+* **max(x)**  最大值
+
+* **mean(x)**  平均
+
+* **var(x)**  變異數
+
+* **median(x)**  中位數
+
+* **quantile(x, 0.25)**  百分位數
+
+需要注意x向量中不得有缺失值，可以用**summary(x)**直接檢查，或是手動排除缺失值，例如mean(x, **na.rm = TRUE**)
+
+
+* **boxplot(x)**  盒形圖
+
+* **bar(x)**  長條圖
+
+* **pie(x)**  圓餅圖
+
+* **hist(x)** 直方圖
+
+---
+
+> _Matrices_
+
++ 建立矩陣
+```{r}
+a <- 1:5; b <- 6:10; c <- 11:15; d <- 16:20
+rbind(a, b, c, d)
+cbind(a, b, c, d)
+X <- 1:20
+matrix(X, nrow = 4, ncol = 5)
+matrix(X, nrow = 4, ncol = 5, byrow = TRUE)
+```
+
++ 矩陣命名及索引
+```{r}
+a <- 1:5; b <- 6:10; c <- 11:15; d <- 16:20
+M1 <- rbind(a, b, c, d)
+dim(M1)
+colnames(M1); rownames(M1)
+colnames(M1) <- c("V1", "V2", "V3", "V4", "V5")
+M1
+M1[2, 4]
+M1[14]
+M1[3, c(3, 5)]
+M1[c(2, 4), ]
+M1[c("b", "c"), c("V2", "V5")]
+```
+---
+
