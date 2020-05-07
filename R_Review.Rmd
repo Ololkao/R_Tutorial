@@ -23,11 +23,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 R建議用**<-**當作指派，雖然多數情況下可以與**=**通用，若要全域指派則用**<<-**
 
-替變數命名可以用 a-z , A-Z , 0-9 , _ , . ,等字元，
+替變數命名可以用 **a-z** ,**A-Z** , **0-9** , _ , **.** 等字元，
 不過開頭必須是英文字母，且不能與保留字(eg. for, while...)相同
 
-
-+ 在R裡有一些跟數學相關的保留字
+#  
++ 在R裡頭有這些跟數學相關的保留字
 ```{r}
 NA  #缺失值
 NaN  #0/0
@@ -36,7 +36,7 @@ pi  #3.1415...
 1e-3  #科學記號
 ```
 
-
+#  
 + 也有很多數學相關的函數
 ```{r}
 abs(-2)
@@ -70,6 +70,7 @@ V1[1:3] <- b
 V1
 ```
 
+# 
 + 向量索引及運算
 ```{r}
 vt1 <- c(2:4)
@@ -84,6 +85,7 @@ vt1*vt2  #長度不相同會出現警告！
 vt1/8:10  #長度相同才能做運算
 ```
 
+# 
 + 與向量有關的函數
 ```{r}
 A <- c(3, 3, 3, 3, 5, 5)
@@ -113,8 +115,10 @@ setequal(A, B)
 
 * **quantile(x, 0.25)**  百分位數
 
-需要注意x向量中不得有缺失值，可以用**summary(x)**直接檢查，或是手動排除缺失值，例如mean(x, **na.rm = TRUE**)
-
+### 
+    需要注意x向量中不得有缺失值，可以用 summary(x) 直接檢查，
+    或是手動排除缺失值，例如mean(x, na.rm = TRUE)
+### 
 
 * **boxplot(x)**  盒形圖
 
@@ -138,6 +142,7 @@ matrix(X, nrow = 4, ncol = 5)
 matrix(X, nrow = 4, ncol = 5, byrow = TRUE)
 ```
 
+# 
 + 矩陣命名及索引
 ```{r}
 a <- 1:5; b <- 6:10; c <- 11:15; d <- 16:20
@@ -154,3 +159,160 @@ M1[c("b", "c"), c("V2", "V5")]
 ```
 ---
 
+> _General Plot Function_
+
+```{r, echo=FALSE}
+x1 = seq(0, 10, 1)
+plot(dbinom(x1,10,0.7), pch=16, type="p", xlab="x", ylab="pmf", ylim=c(0,0.4))
+par(new=T)
+plot(dbinom(x1,10,0.7), type="h", lwd=1.5, xlab="x", ylab="pmf", ylim=c(0,0.4))
+par(new=T)
+
+plot(dbinom(x1,10,0.5), pch=8, type="p", col="blue", xlab="x", ylab="pmf", ylim=c(0,0.4))
+par(new=T)
+plot(dbinom(x1,10,0.5), lty=4, type="h", col="blue", lwd=1.5, xlab="x", ylab="pmf", ylim=c(0,0.4))
+par(new=T)
+
+plot(dbinom(x1,10,0.2), pch=17, type="p", col="red", xlab="x", ylab="pmf", ylim=c(0,0.4))
+par(new=T)
+plot(dbinom(x1,10,0.2), lty=2, type="h", col="red", lwd=1.5, xlab="x", ylab="pmf", ylim=c(0,0.4))
+
+title(expression(paste("Binomial(n, p) with n = 10")))
+legend("topright", c("p = 0.7", "p = 0.5", "p = 0.2"), col = c("black", "blue", "red"), lty=c(1,4,2), pch=c(16,8,17), cex=1)
+```
+
+    plot(x, y,
+
+        type = c("p", "l", "b", "s", "o", "h", "n"),   # types of the plot
+    
+        pch = c(1, ..., 25, "*", ".", "o", "O",
+    
+                "0", "+", "-", "|", "%", "#"),   # the symbol in the plot
+            
+        main = NULL, # the title of the plot
+    
+        lty = c(1, 2, ..., 12),   # the style of a line
+    
+        lwd = ,   # the width of a line
+    
+        cex = ,   # the size of an text
+    
+        bty = c("o", "n", "7", "L", "C", "U"),   # the box around the plot
+    
+        col = ,   # the color of an object
+    
+        xlim = NULL, ylim = NULL,   # the range of an axis
+    
+        sub = NULL,   # the sub-title of the plot
+    
+        xlab = NULL, ylab = NULL,   # the name of an axis
+    
+        cex.main =   # the size of the title
+    
+    )
+
+
+更詳細的資訊可以參考北大林建甫教授的整理資料： [連結點這](https://web.ntpu.edu.tw/~cflin/Teach/R/R06EN06Graphics.pdf)
+
+---
+
+> _Simulation_
+
++ Binomial Distribution generated from U(0,1)
+
+```{r}
+discrete.binomial <- function(n, k, p){
+  X <- rep(NA, n)
+  U <- runif(n, 0, 1)
+  for(j in 1:n){
+    pr <- (1-p)^k
+    Fx <- pr
+    i <- 0
+    while(U[j] >= Fx){
+      pr <- pr*(k - i)/(i + 1)*(p)/(1-p) 
+      Fx <- Fx + pr
+      i <- i + 1
+    }
+    X[j] <- i
+  }
+  return(X)
+}
+
+Y <- discrete.binomial(10000, 100, 0.5)
+hist(Y)
+mean(Y)
+100*0.5  # mean of binomial
+```
+
+# 
++ Using the rejection method to draw the normal distribution
+
+```{r}
+continous.norm <- function(n){
+  X.norm <- rep(NA, n)
+  iter <- rep(NA, n)
+  for (j in 1:n){
+    u1 <- runif(1, 0, 1)
+    Y <- -log(u1)
+    u2 <- runif(1, 0, 1)
+    i <- 1
+    while(u2 > exp(-(Y-1)^2/2)){
+      u1 <- runif(1, 0, 1)
+      Y <- -log(u1)
+      u2 <- runif(1, 0, 1)
+      i <- i+1
+    }
+  X <- Y
+  X.norm[j] <- ifelse(runif(1) < 0.5, -X, X)
+  iter[j] <- i
+  }
+  return(list(X.norm = X.norm, iter = iter))
+}
+res <- continous.norm(10000)
+c(mean(res$X.norm), mean(res$iter))
+
+hist(res$X.norm, probability = TRUE)
+lines(seq(-5, 5, 0.01), dnorm(seq(-5, 5, 0.01)), col = 4)
+```
+
+# 
++ Box-Muller Transformation and the use of Contour Plot
+
+```{r}
+Bivariate.norm <- function(n){
+  U1 <- runif(n, 0, 1)
+  U2 <- runif(n, 0, 1)
+  R2 <- -2*log(U1)
+  Theta <- 2*pi*U2
+  X <- sqrt(R2)*cos(Theta)
+  Y <- sqrt(R2)*sin(Theta)
+  res <- list()
+  res$X <- X
+  res$Y <- Y
+  return(res)
+}
+BN1 <- Bivariate.norm(5000)
+
+
+# Test whether normal or not
+qqnorm(BN1$X, asp = 1)
+qqline(BN1$X)
+qqnorm(BN1$Y, asp = 1)
+qqline(BN1$Y)
+plot(BN1$X, BN1$Y, pch = 19, asp = 1) # asp = 1 means 1:1 aspect-ratio
+
+
+# Add Contour
+x <- seq(-5, 5, 0.01)
+y <- seq(-5, 5, 0.01)
+pdf.BN <- function(x, y){
+  fxy <- matrix(NA, length(x), length(y))
+  for(i in 1:length(x)){
+    for(j in 1:length(y)){
+      fxy[i, j] <- dnorm(x[i])*dnorm(y[j])
+    }
+  }
+  return(fxy)
+}
+contour(x, y, pdf.BN(x, y), nlevels = 15, col = 2, add = TRUE)
+```
